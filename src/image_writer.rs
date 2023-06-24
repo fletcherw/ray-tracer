@@ -4,7 +4,7 @@ use std::{
     path::Path,
 };
 
-type Pixel = (u8, u8, u8);
+pub type Pixel = (u8, u8, u8);
 
 pub struct ImageWriter {
     width: usize,

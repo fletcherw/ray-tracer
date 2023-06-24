@@ -5,7 +5,7 @@ mod v3;
 
 use std::path::Path;
 
-use image_writer::ImageWriter;
+use image_writer::{ImageWriter, Pixel};
 use ray::Ray;
 use triangle::Triangle;
 use v3::V3;
@@ -15,28 +15,32 @@ fn main() -> Result<(), std::io::Error> {
     let height = 300;
     let mut w = ImageWriter::create(width, height);
 
-    let camera = V3::create(0.5, -0.5, 0.0);
+    let camera = V3::create(0.5, 0.5, 0.0);
 
     let objects = [
-        Triangle::create(
+        Triangle::create_color(
             V3::create(-1.0, 0.0, 2.0),
             V3::create(1.0, 0.0, 2.0),
             V3::create(0.0, -1.0, 3.0),
+            (255, 0, 0),
         ),
-        Triangle::create(
+        Triangle::create_color(
             V3::create(1.0, 0.0, 2.0),
             V3::create(1.0, 0.0, 4.0),
             V3::create(0.0, -1.0, 3.0),
+            (0, 255, 0),
         ),
-        Triangle::create(
+        Triangle::create_color(
             V3::create(-1.0, 0.0, 2.0),
             V3::create(-1.0, 0.0, 4.0),
             V3::create(0.0, -1.0, 3.0),
+            (0, 0, 255),
         ),
-        Triangle::create(
+        Triangle::create_color(
             V3::create(-1.0, 0.0, 4.0),
             V3::create(1.0, 0.0, 4.0),
             V3::create(0.0, -1.0, 3.0),
+            (255, 0, 255),
         ),
     ];
 
@@ -49,17 +53,22 @@ fn main() -> Result<(), std::io::Error> {
 
             let closest_intersection = objects
                 .iter()
-                .filter_map(|obj| obj.intersect(&ray).map(|v| v.length()))
-                .min_by(|a, b| a.partial_cmp(b).unwrap());
-            if let Some(distance) = closest_intersection {
-                w.set_pixel(
-                    r,
-                    c,
-                    (0, (255.0 / (distance * f64::sqrt(distance))) as u8, 0),
-                )
+                .filter_map(|obj| obj.intersect(&ray).map(|v| (v.length(), obj.color())))
+                .min_by(|(d_a, _), (d_b, _)| d_a.partial_cmp(d_b).unwrap());
+            if let Some((distance, color)) = closest_intersection {
+                let scale = 1.0 / distance;
+                w.set_pixel(r, c, scale_pixel(color, scale))
             }
         }
     }
 
     w.write_image(Path::new("./output.pbm"))
+}
+
+fn scale_pixel(pixel: Pixel, scale: f64) -> Pixel {
+    (
+        ((pixel.0 as f64) * scale) as u8,
+        ((pixel.1 as f64) * scale) as u8,
+        ((pixel.2 as f64) * scale) as u8,
+    )
 }

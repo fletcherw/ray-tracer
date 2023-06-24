@@ -1,3 +1,4 @@
+use crate::image_writer::Pixel;
 use crate::ray::Ray;
 use crate::v3::V3;
 
@@ -5,11 +6,20 @@ pub struct Triangle {
     p1: V3,
     p2: V3,
     p3: V3,
+    color: Pixel,
 }
 
 impl Triangle {
+    pub fn create_color(p1: V3, p2: V3, p3: V3, color: Pixel) -> Self {
+        Self { p1, p2, p3, color }
+    }
+
     pub fn create(p1: V3, p2: V3, p3: V3) -> Self {
-        Self { p1, p2, p3 }
+        Triangle::create_color(p1, p2, p3, (0, 255, 0))
+    }
+
+    pub fn color(&self) -> Pixel {
+        self.color
     }
 
     pub fn normal(&self) -> V3 {
