@@ -1,6 +1,6 @@
-use std::ops::Mul;
+use std::ops::{Mul, Sub};
 
-#[derive(Debug, PartialEq)]
+#[derive(Copy, Clone, Debug, PartialEq)]
 pub struct V3 {
     x: f64,
     y: f64,
@@ -17,14 +17,41 @@ impl V3 {
     }
 }
 
-impl Mul for V3 {
+impl Sub<&Self> for V3 {
     type Output = Self;
 
-    fn mul(self, rhs: Self) -> Self {
+    fn sub(self, rhs: &Self) -> Self {
+        let x = self.x - rhs.x;
+        let y = self.y - rhs.y;
+        let z = self.z - rhs.z;
+        Self::create(x, y, z)
+    }
+}
+
+impl Sub<Self> for V3 {
+    type Output = Self;
+
+    fn sub(self, rhs: Self) -> Self {
+        self - &rhs
+    }
+}
+
+impl Mul<&Self> for V3 {
+    type Output = Self;
+
+    fn mul(self, rhs: &Self) -> Self {
         let x = self.y * rhs.z - self.z * rhs.y;
         let y = self.z * rhs.x - self.x * rhs.z;
         let z = self.x * rhs.y - self.y * rhs.x;
         Self::create(x, y, z)
+    }
+}
+
+impl Mul<Self> for V3 {
+    type Output = Self;
+
+    fn mul(self, rhs: Self) -> Self {
+        self * &rhs
     }
 }
 
