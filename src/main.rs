@@ -1,3 +1,4 @@
+mod ray;
 mod triangle;
 mod v3;
 

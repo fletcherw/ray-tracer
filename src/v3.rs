@@ -1,4 +1,4 @@
-use std::ops::{Mul, Sub};
+use std::ops::{Add, Mul, Sub};
 
 #[derive(Copy, Clone, Debug, PartialEq)]
 pub struct V3 {
@@ -15,16 +15,38 @@ impl V3 {
     pub fn dot(&self, other: &V3) -> f64 {
         self.x * other.x + self.y * other.y + self.z * other.z
     }
+
+    pub fn length(&self) -> f64 {
+        f64::sqrt(self.x * self.x + self.y * self.y + self.z * self.z)
+    }
+}
+impl Add<&V3> for V3 {
+    type Output = V3;
+
+    fn add(self, rhs: &V3) -> V3 {
+        let x = self.x + rhs.x;
+        let y = self.y + rhs.y;
+        let z = self.z + rhs.z;
+        V3::create(x, y, z)
+    }
 }
 
-impl Sub<&Self> for V3 {
-    type Output = Self;
+impl Add<V3> for V3 {
+    type Output = V3;
 
-    fn sub(self, rhs: &Self) -> Self {
+    fn add(self, rhs: V3) -> V3 {
+        self + &rhs
+    }
+}
+
+impl Sub<&V3> for &V3 {
+    type Output = V3;
+
+    fn sub(self, rhs: &V3) -> V3 {
         let x = self.x - rhs.x;
         let y = self.y - rhs.y;
         let z = self.z - rhs.z;
-        Self::create(x, y, z)
+        V3::create(x, y, z)
     }
 }
 
@@ -32,34 +54,57 @@ impl Sub<Self> for V3 {
     type Output = Self;
 
     fn sub(self, rhs: Self) -> Self {
-        self - &rhs
+        &self - &rhs
     }
 }
+impl Mul<&V3> for &V3 {
+    type Output = V3;
 
-impl Mul<&Self> for V3 {
-    type Output = Self;
-
-    fn mul(self, rhs: &Self) -> Self {
+    fn mul(self, rhs: &V3) -> V3 {
         let x = self.y * rhs.z - self.z * rhs.y;
         let y = self.z * rhs.x - self.x * rhs.z;
         let z = self.x * rhs.y - self.y * rhs.x;
-        Self::create(x, y, z)
+        V3::create(x, y, z)
     }
 }
 
-impl Mul<Self> for V3 {
-    type Output = Self;
+impl Mul<&V3> for V3 {
+    type Output = V3;
 
-    fn mul(self, rhs: Self) -> Self {
+    fn mul(self, rhs: &V3) -> V3 {
+        &self * rhs
+    }
+}
+
+impl Mul<V3> for &V3 {
+    type Output = V3;
+
+    fn mul(self, rhs: V3) -> V3 {
         self * &rhs
     }
 }
 
-impl Mul<f64> for V3 {
-    type Output = Self;
+impl Mul<V3> for V3 {
+    type Output = V3;
 
-    fn mul(self, rhs: f64) -> Self {
-        Self::create(self.x * rhs, self.y * rhs, self.z * rhs)
+    fn mul(self, rhs: V3) -> V3 {
+        &self * &rhs
+    }
+}
+
+impl Mul<f64> for &V3 {
+    type Output = V3;
+
+    fn mul(self, rhs: f64) -> V3 {
+        V3::create(self.x * rhs, self.y * rhs, self.z * rhs)
+    }
+}
+
+impl Mul<f64> for V3 {
+    type Output = V3;
+
+    fn mul(self, rhs: f64) -> V3 {
+        &self * rhs
     }
 }
 
