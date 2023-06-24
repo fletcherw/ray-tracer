@@ -15,7 +15,7 @@ pub struct ImageWriter {
 impl ImageWriter {
     pub fn create(width: usize, height: usize) -> Self {
         let mut image_data = Vec::new();
-        image_data.resize(width * height, (0, 0, 0));
+        image_data.resize(width * height, (255, 255, 255));
         Self {
             width,
             height,
